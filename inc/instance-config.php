@@ -95,7 +95,6 @@ $config['additional_javascript'][] = 'js/auto-reload.js';
 $config['additional_javascript'][] = 'js/auto-scroll.js';
 $config['additional_javascript'][] = 'js/infinite-scroll.js';
 $config['additional_javascript'][] = 'js/titlebar-notifications.js';
-$config['additional_javascript'][] = 'js/catalog.js';
 $config['additional_javascript'][] = 'js/catalog-search.js';
 $config['additional_javascript'][] = 'js/compact-boardlist.js';
 $config['additional_javascript'][] = 'js/mobile-style.js';

@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+        <script type="text/javascript">
+	  var
+          {% if not no_post_form %}
+              active_page = "index"
+            , board_name = "{{ board.uri }}";
+	  {% else %}
+              active_page = "ukko";
+          {% endif %}
+        </script>
+
+	{% include 'header.html' %}
+	<title>{{ board.url }} - {{ board.title|e }}</title>
+</head>
+<body class="8chan vichan {% if mod %}is-moderator{% else %}is-not-moderator{% endif %} active-{% if not no_post_form %}index{% else %}ukko{% endif %}" data-stylesheet="{% if config.default_stylesheet.1 != '' %}{{ config.default_stylesheet.1 }}{% else %}default{% endif %}">
+	{{ boardlist.top }}
+	
+	{% if pm %}<div class="top_notice">You have <a href="?/PM/{{ pm.id }}">an unread PM</a>{% if pm.waiting > 0 %}, plus {{ pm.waiting }} more waiting{% endif %}.</div><hr />{% endif %}
+	{% if config.url_banner %}<img class="board_image" src="{{ config.url_banner }}" {% if config.banner_width or config.banner_height %}style="{% if config.banner_width %}width:{{ config.banner_width }}px{% endif %};{% if config.banner_width %}height:{{ config.banner_height }}px{% endif %}" {% endif %}alt="" />{% endif %}
+	
+	<header>
+		<h1><a href="{{ link }}">{{ board.url }} - {{ board.title|e }}</a></h1>
+		<div class="subtitle">
+			{% if board.subtitle %}
+				{% if config.allow_subtitle_html %}
+					{{ board.subtitle }}
+				{% else %}
+					{{ board.subtitle|e }}
+				{% endif %}
+			{% endif %}
+			{% if config.catalog_button %}
+            {% if not mod %}<br><a href="{{ link }}catalog.html">{% trans %}Catalog{% endtrans %}</a>{% endif %}
+            {% if mod %}<br><a href="?{{ board.url }}catalog.html">{% trans %}Catalog{% endtrans %}</a>{% endif %}
+			{% if mod %}<p><a href="?/">{% trans %}Return to dashboard{% endtrans %}</a></p>{% endif %}
+			{% endif %}
+		</div>
+	</header>
+
+	{% include 'attention_bar.html' %}
+
+	{{ config.ad.top }}
+
+	{% if not no_post_form %}
+		{% include 'post_form.html' %}
+	{% else %}
+		{% include 'boardlist.html' %}
+	{% endif %}
+
+	{% if config.page_nav_top %}
+		<div class="pages top">
+			{% for page in pages %}
+			 [<a {% if page.selected %}class="selected"{% endif %}{% if not page.selected %}href="{{ page.link }}"{% endif %}>{{ page.num }}</a>]{% if loop.last %} {% endif %}
+			{% endfor %}
+			{{ btn.next }}
+		</div>
+	{% endif %}
+	
+		<div id="news" style="margin: auto;border: 1px solid #B7C5D9; width:75%; padding: 5px;">
+	<table class="news-table">
+            <tbody id="news-container"><tr><td colspan="2">No news found.</td></tr></tbody>
+        </table>
+	</ul></div>
+
+	<script>
+const BOARD_META = [{"uri":"qa2","title":"Business Inquiries"},{"uri":"soicuck","title":"Offsite"},{"uri":"weab","title":"Weaboos and Soicucks"},{"uri":"q","title":"Pond Meta"},{"uri":"news","title":"Fox News"}];
+const RECENT_THEME_PATH = "/recent.html";
+
+function stripHtml(html) {
+    return String(html || '')
+        .replace(/<br\s*\/?>/gi, ' ')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&gt;/g, '>')
+        .replace(/&lt;/g, '<')
+        .replace(/&amp;/g, '&')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function normalizeText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+async function fetchJsonNoStore(url) {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
+        throw new Error(url + ' returned ' + res.status);
+    }
+    return res.json();
+}
+
+let recentThemeDocPromise = null;
+function getRecentThemeDoc() {
+    if (!recentThemeDocPromise) {
+        recentThemeDocPromise = fetch(RECENT_THEME_PATH, { cache: 'no-store' })
+            .then(r => {
+                if (!r.ok) throw new Error('recent theme fetch failed: ' + r.status);
+                return r.text();
+            })
+            .then(html => new DOMParser().parseFromString(html, 'text/html'));
+    }
+    return recentThemeDocPromise;
+}
+
+let overboardDocPromise = null;
+function getOverboardDoc() {
+    if (!overboardDocPromise) {
+        overboardDocPromise = fetch('/overboard/index.html', { cache: 'no-store' })
+            .then(r => {
+                if (!r.ok) throw new Error('overboard fetch failed: ' + r.status);
+                return r.text();
+            })
+            .then(html => new DOMParser().parseFromString(html, 'text/html'));
+    }
+    return overboardDocPromise;
+}
+
+function getSectionListByHeading(doc, headingText) {
+    const headings = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    const targetHeading = headings.find(el => normalizeText(el.textContent).toLowerCase() === headingText.toLowerCase());
+    if (!targetHeading) return null;
+
+    let current = targetHeading.nextElementSibling;
+    while (current) {
+        if (current.tagName && current.tagName.toLowerCase() === 'ul') {
+            return current;
+        }
+        if (current.tagName && /^h[1-6]$/i.test(current.tagName)) {
+            break;
+        }
+        current = current.nextElementSibling;
+    }
+
+    return null;
+}
+
+function flattenCatalogThreads(catalogPages) {
+    let threads = [];
+    (Array.isArray(catalogPages) ? catalogPages : []).forEach(page => {
+        if (Array.isArray(page.threads)) {
+            threads = threads.concat(page.threads);
+        }
+    });
+    return threads;
+}
+
+function renderSiteStatsFromRecentTheme(doc) {
+    const list = getSectionListByHeading(doc, 'Statistics') || getSectionListByHeading(doc, 'Stats');
+    if (!list) return null;
+
+    const items = [];
+
+    Array.from(list.querySelectorAll('li')).forEach(li => {
+        const clone = li.cloneNode(true);
+
+        clone.querySelectorAll('a[href]').forEach(a => {
+            const hrefRaw = a.getAttribute('href') || '';
+            if (!hrefRaw) return;
+
+            try {
+                const href = new URL(hrefRaw, location.origin);
+                a.setAttribute('href', href.pathname + href.search + href.hash);
+            } catch (e) {}
+        });
+
+        const html = clone.innerHTML.trim();
+        if (html) items.push(`<li>${html}</li>`);
+    });
+
+    if (!items.length) return null;
+    return items.join('');
+}
+
+async function loadSiteStats() {
+    const box = document.getElementById('site-stats');
+    if (!box) return;
+
+    try {
+        const recentThemeDoc = await getRecentThemeDoc();
+        const html = renderSiteStatsFromRecentTheme(recentThemeDoc);
+        box.innerHTML = html || '<li>Statistics not found in /recent.html.</li>';
+    } catch (e) {
+        box.innerHTML = '<li>Statistics load error.</li>';
+    }
+}
+
+async function loadNews() {
+    const box = document.getElementById('news-container');
+    if (!box) return;
+
+    try {
+        const pages = await fetchJsonNoStore('/news/catalog.json');
+        const threads = flattenCatalogThreads(pages).sort((a, b) => (b.time || 0) - (a.time || 0));
+
+        box.innerHTML = threads.slice(0, 5).map(t => {
+            const date = new Date((Number(t.time) || 0) * 1000).toLocaleDateString();
+            const title = t.sub || 'News';
+            return `<ul style=" list-style-type: disc; padding-left: 20px;"><li>${date}: <a href="/news/res/${t.no}.html">${title}</a></li></ul>`;
+        }).join('') || '<tr><td colspan="2">No news found.</td></tr>';
+    } catch (e) {
+        box.innerHTML = '<tr><td colspan="2">News load error.</td></tr>';
+    }
+}
+
+function renderRecentImagesFromRecentTheme(doc) {
+    const list = getSectionListByHeading(doc, 'Recent Images');
+    if (!list) return null;
+
+    const items = [];
+    const seen = new Set();
+
+    Array.from(list.querySelectorAll('li')).forEach(li => {
+        if (items.length >= 4) return;
+
+        const linkEl = li.querySelector('a[href]');
+        const imgEl = li.querySelector('img[src]');
+        if (!linkEl || !imgEl) return;
+
+        const link = new URL(linkEl.getAttribute('href'), location.origin);
+        const thumb = new URL(imgEl.getAttribute('src'), location.origin);
+        const key = `${link.pathname}${link.hash}|${thumb.pathname}${thumb.search}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+
+        items.push({
+            link: link.pathname + (link.hash || ''),
+            thumb: thumb.pathname + thumb.search
+        });
+    });
+
+    if (!items.length) return null;
+
+    return items.map(item => `
+        <li>
+            <a href="${item.link}">
+                <img src="${item.thumb}" alt="">
+            </a>
+        </li>
+    `).join('');
+}
+
+function renderRecentImagesFromOverboard(doc) {
+    let links = Array.from(doc.querySelectorAll('a.fileThumb'));
+    if (!links.length) {
+        links = Array.from(doc.querySelectorAll('a[href*="/src/"]')).filter(a => /\.(png|jpe?g|gif|webp)$/i.test(a.getAttribute('href') || ''));
+    }
+
+    const items = [];
+    const seen = new Set();
+
+    for (const a of links) {
+        if (items.length >= 4) break;
+
+        const hrefRaw = a.getAttribute('href') || '';
+        if (!hrefRaw) continue;
+
+        const fullUrl = new URL(hrefRaw, location.origin);
+        const img = a.querySelector('img');
+        const thumb = img ? new URL(img.getAttribute('src') || hrefRaw, location.origin).pathname : fullUrl.pathname;
+        const threadLink = (a.closest('.thread')?.querySelector('a[href*="/res/"]')?.getAttribute('href')) || fullUrl.pathname;
+        const normalizedThreadLink = new URL(threadLink, location.origin).pathname + (new URL(threadLink, location.origin).hash || '');
+        const key = `${fullUrl.pathname}|${normalizedThreadLink}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        items.push({ full: fullUrl.pathname, thumb, link: normalizedThreadLink });
+    }
+
+    if (!items.length) return null;
+
+    return items.map(item => `
+        <li>
+            <a href="${item.link}">
+                <img src="${item.thumb}" onerror="this.onerror=null;this.src='${item.full}';" alt="">
+            </a>
+        </li>
+    `).join('');
+}
+
+async function loadRecentImages() {
+    const box = document.getElementById('recent-images');
+    if (!box) return;
+
+    try {
+        const recentThemeDoc = await getRecentThemeDoc();
+        const html = renderRecentImagesFromRecentTheme(recentThemeDoc);
+        if (html) {
+            box.innerHTML = html;
+            return;
+        }
+    } catch (e) {}
+
+    try {
+        const overboardDoc = await getOverboardDoc();
+        const html = renderRecentImagesFromOverboard(overboardDoc);
+        box.innerHTML = html || '<li>No images found.</li>';
+    } catch (e) {
+        box.innerHTML = '<li>Recent image load error.</li>';
+    }
+}
+
+function renderLatestPostsFromRecentTheme(doc) {
+    const list = getSectionListByHeading(doc, 'Latest Posts') || getSectionListByHeading(doc, 'Recent Posts');
+    if (!list) return null;
+
+    const items = [];
+    const seen = new Set();
+
+    Array.from(list.querySelectorAll('li')).forEach(li => {
+        if (items.length >= 25) return;
+
+        const strong = li.querySelector('strong');
+        const linkEl = li.querySelector('a[href]');
+        if (!linkEl) return;
+
+        const board = normalizeText(strong ? strong.textContent : '').replace(/:$/, '');
+        const snippet = normalizeText(linkEl.textContent);
+        if (!snippet) return;
+
+        const link = new URL(linkEl.getAttribute('href'), location.origin);
+        const key = `${link.pathname}${link.hash}|${snippet}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+
+        items.push({
+            board: board || 'Post',
+            link: link.pathname + (link.hash || ''),
+            snippet
+        });
+    });
+
+    if (!items.length) return null;
+
+    return items.map(item => `
+        <li>
+            <strong>${item.board}</strong>: <a href="${item.link}"><span class="lp-snippet">${item.snippet}</span></a>
+        </li>
+    `).join('');
+}
+
+function renderLatestPostsFromOverboard(doc) {
+    const posts = Array.from(doc.querySelectorAll('div.post, div.reply, div.postContainer'));
+    const items = [];
+    const seen = new Set();
+
+    for (const post of posts) {
+        const msgEl = post.querySelector('blockquote.postMessage, blockquote, .postMessage, .body');
+        const linkEl = post.querySelector('a[href*="/res/"][href*="#p"], a[href*="/res/"][href*="#q"], a[href*="/res/"]');
+        if (!msgEl || !linkEl) continue;
+
+        const url = new URL(linkEl.getAttribute('href') || '', location.origin);
+        const match = url.pathname.match(/^\/([^/]+)\/res\/\d+\.html$/);
+        if (!match) continue;
+
+        const snippet = stripHtml(msgEl.innerHTML).slice(0, 120);
+        if (!snippet) continue;
+
+        const key = `${url.pathname}${url.hash}|${snippet}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        items.push({
+            board: `/${match[1]}/`,
+            link: url.pathname + (url.hash || ''),
+            snippet
+        });
+
+        if (items.length >= 25) break;
+    }
+
+    if (!items.length) return null;
+
+    return items.map(item => `
+        <li>
+            <strong>${item.board}</strong>: <a href="${item.link}"><span class="lp-snippet">${item.snippet}</span></a>
+        </li>
+    `).join('');
+}
+
+async function loadLatestPosts() {
+    const box = document.getElementById('latest-posts');
+    if (!box) return;
+
+    try {
+        const recentThemeDoc = await getRecentThemeDoc();
+        const html = renderLatestPostsFromRecentTheme(recentThemeDoc);
+        if (html) {
+            box.innerHTML = html;
+            return;
+        }
+    } catch (e) {}
+
+    try {
+        const overboardDoc = await getOverboardDoc();
+        const html = renderLatestPostsFromOverboard(overboardDoc);
+        box.innerHTML = html || '<li>No posts found.</li>';
+    } catch (e) {
+        box.innerHTML = '<li>Recent post load error.</li>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadNews();
+});
+	</script>
+	{% if config.global_message %}<hr /><div class="blotter">{{ config.global_message }}</div>{% endif %}
+	<hr />
+	{% if config.board_search %}
+	<!-- Start Search Form -->
+        	<form style="display:inline" action="/search.php">
+                	<p style="margin: 10px;">
+                    		<input type="text" name="search" placeholder="{{ board.uri }} search">
+                    		<input type="hidden" name="board" value="{{ board.uri }}">
+                    		<input type="submit" value="Search">
+                	</p>
+        	</form>
+    	<!-- End Search Form -->
+    	{% endif %}
+	<form name="postcontrols" action="{{ config.post_url }}" method="post">
+	<input type="hidden" name="board" value="{{ board.uri }}" />
+	{% if mod %}<input type="hidden" name="mod" value="1" />{% endif %}
+	{{ body }}
+	{% include 'report_delete.html' %}
+	</form>
+	
+	<div class="pages">
+		{{ btn.prev }} {% for page in pages %}
+		 [<a {% if page.selected %}class="selected"{% endif %}{% if not page.selected %}href="{{ page.link }}"{% endif %}>{{ page.num }}</a>]{% if loop.last %} {% endif %}
+		{% endfor %} {{ btn.next }}
+        {% if config.catalog_button %}
+			 | <a href="{{ config.root }}{% if mod %}{{ config.file_mod }}?/{% endif %}{{ board.dir }}catalog.html">{% trans %}Catalog{% endtrans %}</a>
+		{% endif %}
+	</div>
+	
+	{{ boardlist.bottom }}
+
+	{{ config.ad.bottom }}
+
+	{% include 'footer.html' %}
+	<script type="text/javascript" src="/js/style-select.js"></script>
+	<script type="text/javascript">{% verbatim %}
+		ready();
+	{% endverbatim %}</script>
+	
+</body>
+</html>

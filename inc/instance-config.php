@@ -129,6 +129,8 @@ $config['additional_javascript'][] = 'js/strip-filenames.js';
 $config['boards'] = array(
     array(
         'home'      => '/',
+		'bans'      => '/bans.php',
+		'bgr'
     )
 );
 

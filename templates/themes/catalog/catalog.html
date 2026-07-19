@@ -5,26 +5,29 @@
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<script type='text/javascript'>
 		var active_page = "catalog"
-		  , board_name = "{{ board }}";
+		  , board_name = "{{ board.uri }}";
 	</script>
 	{% include 'header.html' %}
-	<title>/{{ board }}/ - Catalog</title>
+	<title>/{{ board.uri }}/ - Catalog</title>
 </head>
 <body class="8chan vichan {% if mod %}is-moderator{% else %}is-not-moderator{% endif %} theme-catalog active-catalog" data-stylesheet="{% if config.default_stylesheet.1 != '' %}{{ config.default_stylesheet.1 }}{% else %}default{% endif %}">
 	{{ boardlist.top }}
 	<header>
 	{% if config.url_banner %}<img class="board_image" src="{{ config.url_banner }}" {% if config.banner_width or config.banner_height %}style="{% if config.banner_width %}width:{{ config.banner_width }}px{% endif %};{% if config.banner_width %}height:{{ config.banner_height }}px{% endif %}" {% endif %}alt="" />{% endif %}<br>
-		<h1>/{{ board }}/ <!-- - {{ board.title|e }} --> catalog</h1>
+		<h1><a href="{{ link }}">{{ board.url }} - {{ board.title|e }}</a></h1>
 		<div class="subtitle">
-		<!-- {% if board.subtitle %}
-			{% if config.allow_subtitle_html %}
-			{{ board.subtitle }}{% endif %}
-			{% else %}
-			{{ board.subtitle|e }}{% endif %} -->
-		{% if not mod %}<a href="{{ link }}">{% trans %}Return to Index{% endtrans %}</a>{% endif %}
-		{% if mod %}<a href="{{ link }}">{% trans %}Return to Index{% endtrans %}</a>{% endif %}
+			{% if board.subtitle %}
+				{% if config.allow_subtitle_html %}
+					{{ board.subtitle }}
+				{% else %}
+					{{ board.subtitle|e }}
+				{% endif %}
+			{% endif %}
+		{% if not mod %}<br><a href="{{ link }}">{% trans %}Return to Index{% endtrans %}</a>{% endif %}
+		{% if mod %}<br><a href="{{ link }}">{% trans %}Return to Index{% endtrans %}</a>{% endif %}
 		{% if mod %}<p><a href="?/">{% trans %}Return to dashboard{% endtrans %}</a></p>{% endif %}
 		</div>
+
 	</header>
         <span>{% trans 'Sort by' %}: </span>
         <select id="sort_by" style="display: inline-block">

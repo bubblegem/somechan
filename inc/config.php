@@ -1463,6 +1463,13 @@
         'color:#0066cc' // Change tripcode style; optional
     );
 
+    $config['custom_capcode']['Manager'] = array(
+        '<span class="capcode" style="color:#0066cc;font-weight:bold"> ## %s</span>',
+        'color:black;font-weight:bold', // Change name style; optional
+        'color:black' // Change tripcode style; optional
+		/* i do not know what color to make these, so you get black */
+    );
+
 	$config['custom_capcode']['Admin'] = array(
     		'<span class="capcode" style="color:red;font-weight:bold"> ## %s</span> <img src="//someboard.gemparty.soy/static/admin-badge.png" alt="This user is an admin." title="This user is an admin." style="width:18px;height:18px;vertical-align:middle;margin-right:6px">',
     		'color:red;font-weight:bold',
@@ -1546,13 +1553,15 @@
 	$config['mod']['groups'] = array(
 		10	=> 'Janitor',
 		20	=> 'Mod',
-		30	=> 'Admin',
+		50	=> 'Admin',
 		// 98	=> 'God',
 		99	=> 'Disabled'
 	);
 	
-	$config['mod']['groups'][40] = 'Developer';
-	$config['mod']['groups'][50] = 'Owner';
+	$config['mod']['groups'][30] = 'Developer';
+	$config['mod']['groups'][40] = 'Manager';
+	// admin group number is 50
+	$config['mod']['groups'][60] = 'Owner';
 	define_groups();
 
 	// Capcode permissions.
@@ -1560,6 +1569,7 @@
 	//	JANITOR		=> array('Janitor'),
 		MOD		=> array('Mod'),
 		DEVELOPER => array('Developer'),
+		Manager => array('Manager'),
 		ADMIN =>	array('Admin'),
 		OWNER       => true
 	);

@@ -67,11 +67,7 @@ if (file_exists($requiredFile)) {
     exit;
 }
 
-echo '<link rel="stylesheet" media="screen" href="/stylesheets/style.css">';
-echo '<script type="text/javascript" src="/js/mobile-style.js"></script>';
-require 'inc/javascript.php';
-
-echo '<center>bans.html file cannot be found. For mods: go to the mod dashboard, click manage themes, and install the Public Banlist one, then this will start working.</center>';
+echo '<header><h1>Ban List</h1></header><center>bans.html file cannot be found. Please add the bans.html file in order for bans.php to work properly. For mods: go to the mod dashboard, click manage themes, and install the Public Banlist one, then this will start working.</center>';
 ?>
 </body>
 </html>

@@ -122,7 +122,8 @@
 				'recent_images' => $recent_images,
 				'recent_posts' => $recent_posts,
 				'stats' => $stats,
-				'board' => $board_name,
+				'board' => $board,
+                'board_name' => $board_name,
 				'link' => $link,
 				'mod' => $mod
 			));

@@ -1000,7 +1000,7 @@ $instance_config =
 	}
 	
 	$page['title'] = 'Installation complete';
-	$page['body'] = '<center>Thank you for using somechan. Please remember to report any bugs you discover. <a href="https://github.com/vichan-devel/vichan/wiki/Configuration-Basics">Please read this if you want to learn to modify the config files.<br><br>Wiki for somechan will be set up soon.</center></a>';
+	$page['body'] = '<center>Thank you for using somechan. Please remember to report any bugs you discover. <a href="https://github.com/vichan-devel/vichan/wiki/Configuration-Basics">Please read this if you want to learn to modify the config files.</a><br><br>Wiki for somechan will be set up soon.</center>';
 	
 	// Admin panel notice
 	$page['body'] .= '<div class="ban"><h2>Next Steps</h2>' .

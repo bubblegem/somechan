@@ -69,5 +69,7 @@ $(function () {
 	  };
 	</script>
 	{% endif %}
-	<input name="report" id="report" value="{% trans %}Submit{% endtrans %}" type="submit">
+    {% if not (report_captcha or config.other or report_turnstile_captcha) %}
+    <input name="report" id="report" value="{% trans %}Submit{% endtrans %}" type="submit">
+    {% endif %}
 </form>

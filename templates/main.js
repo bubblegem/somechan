@@ -109,51 +109,11 @@ function alert(a, do_confirm, confirm_ok_action, confirm_cancel_action) {
 var saved = {};
 
 
-var selectedstyle = 'Yotsoyba B';
+var selectedstyle = '{% endverbatim %}{{ config.default_stylesheet.0|addslashes }}{% verbatim %}';
 var styles = {
-	
-	'Yotsoyba B' : '',
-	'Mint' : '/stylesheets/mint.css',
-	'Win7' : '/stylesheets/win7.css',
-	'Photon' : '/stylesheets/photon.css?v2',
-	'Spooky' : '/stylesheets/spooky.css?v2',
-	'Yotsoyba' : '/stylesheets/yotsuba.css',
-	'Yotsoybatrue' : '/stylesheets/yotsoybatrue.css',
-	'Futaba' : '/stylesheets/futaba+vichan.css',
-	'Burichan' : '/stylesheets/burichan.css',
-	'Dark' : '/stylesheets/dark.css',
-	'Glow' : '/stylesheets/glow.css',
-	'Midnight' : '/stylesheets/dark2.css',
-	'Mutt' : '/stylesheets/mutt.css',
-	'Christmas4' : '/stylesheets/christmas4.css',
-	'Chadparty' : '/stylesheets/chadparty.css',
-	'FrootigerAerthough' : '/stylesheets/frootiger_aerthough.css',
-	'Pina Coalada' : '/stylesheets/pinacoalada.css',
-	'His Theme' : '/stylesheets/histheme.css',
-	'Calm' : '/stylesheets/calm.css',
-	'Rage' : '/stylesheets/rage.css',
-	'Pina Coalada - Sunset' : '/stylesheets/pinacoaladasunset.css',
-	'Independence' : '/stylesheets/independence.css',
-	'Skibidi' : '/stylesheets/skibidi.css',
-	'Frooty' : '/stylesheets/froot.css',
-	'Thanos' : '/stylesheets/thanos.css',
-	'J*rtycvck' : '/stylesheets/jarty.css',
-	'Soya' : '/stylesheets/soya.css?v1',
-	'Eater' : '/stylesheets/eater.css',
-	'Thanksgiving' : '/stylesheets/thanksgiving.css?v2',
-	'Christmas 2' : '/stylesheets/christmas2.css',
-	'Kosher' : '/stylesheets/kosher.css',
-	'Shaved Ice' : '/stylesheets/dem.css',
-	'Workaholic' : '/stylesheets/workaholic.css',
-	'Win95' : '/stylesheets/win95.css',
-	'America' : '/stylesheets/america.css',
-	'Solunar' : '/stylesheets/solunar.css',
-	'Solunar - Night' : '/stylesheets/solunar/night.css',
-	'Solunar - Day' : '/stylesheets/solunar/day.css',
-	'Soylent' : '/stylesheets/soylent.css',
-	'The Ribbit Rally' : '/stylesheets/trr.css',
-	'New Year' : '/stylesheets/newyear.css',
-	
+	{% endverbatim %}
+	{% for stylesheet in stylesheets %}{% verbatim %}'{% endverbatim %}{{ stylesheet.name|addslashes }}{% verbatim %}' : '{% endverbatim %}{{ stylesheet.uri|addslashes }}{% verbatim %}',
+	{% endverbatim %}{% endfor %}{% verbatim %}
 };
 
 if (typeof board_name === 'undefined') {
@@ -161,9 +121,16 @@ if (typeof board_name === 'undefined') {
 }
 
 function changeStyle(styleName, link) {
-	
-			localStorage.stylesheet = styleName;
-		
+	{% endverbatim %}
+	{% if config.stylesheets_board %}{% verbatim %}
+		if (board_name) {
+			stylesheet_choices[board_name] = styleName;
+			localStorage.board_stylesheets = JSON.stringify(stylesheet_choices);
+		}
+	{% endverbatim %}{% else %}
+		localStorage.stylesheet = styleName;
+	{% endif %}
+	{% verbatim %}
 	
 	if (!document.getElementById('stylesheet')) {
 		var s = document.createElement('link');

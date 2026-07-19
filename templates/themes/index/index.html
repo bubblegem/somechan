@@ -1,0 +1,574 @@
+{% filter remove_whitespace %}
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>{{ settings.title }}</title>
+	<link rel="stylesheet" media="screen" href="{{ config.url_stylesheet }}"/>
+	<link rel="stylesheet" media="screen" href="{{ config.root }}{{ settings.css }}"/>
+	{% if config.url_favicon %}<link rel="shortcut icon" href="{{ config.url_favicon }}" />{% endif %}
+	{% if config.default_stylesheet.1 != '' %}<link rel="stylesheet" type="text/css" id="stylesheet" href="{{ config.uri_stylesheets }}{{ config.default_stylesheet.1 }}">{% endif %}
+	<link rel="stylesheet" media="screen" href="/homepage.css">
+	{% if config.font_awesome %}<link rel="stylesheet" href="{{ config.root }}{{ config.font_awesome_css }}">{% endif %}
+	{% include 'header.html' %}
+	
+	<!-- doing it yoot style
+    taken from a old gerty archive: https://web.archive.org/web/20260320025339/https://gemparty.soy/ (thank god wayback machine archives extra SNCA shit like this) -->
+     <style>
+        :root {
+            --bg-color: #eef2ff;
+            --nav-border: #B7C5D9;
+            --header-purple: #9988ee;
+            --text-main: #000000;
+            --text-link: #34345c;
+            --title-red: #af0a0f;
+            --border-dark: #000000;
+            --box-bg: #ffffff;
+            --row-alt: #f6f7fd;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        a,
+        a:visited,
+        .board-link,
+        .board-link:visited,
+        #latest-posts a,
+        #latest-posts a:visited,
+        .about-content a,
+        .about-content a:visited,
+        .news-table a,
+        .news-table a:visited {
+            color: var(--text-link);
+            text-decoration: underline;
+        }
+
+        a:hover,
+        .board-link:hover,
+        #latest-posts a:hover,
+        .about-content a:hover,
+        .news-table a:hover {
+            color: #ff0000;
+            text-decoration: underline;
+        }
+
+        #garty-fixed-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--nav-border);
+            padding: 3px 8px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        .header-area {
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .site-icon {
+            width: 230px;
+            height: 254px;
+            display: block;
+            margin: 0 auto;
+            border: 0;
+        }
+
+        .site-title {
+            display: block;
+            margin: 10px 0;
+            font-family: serif;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--title-red) !important;
+            text-decoration: underline;
+        }
+
+        .wrapper {
+            width: 95%;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .box-title {
+            display: inline-block;
+            min-width: 100px;
+            padding: 3px 8px;
+            background: var(--header-purple);
+            color: #000;
+            border: 1px solid var(--border-dark);
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        .box-content {
+            background: var(--box-bg);
+            border: 1px solid var(--border-dark);
+            margin-bottom: 28px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .news-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .news-date {
+            width: 95px;
+            color: #444;
+        }
+
+        .stats-table th {
+            background: var(--header-purple);
+            text-align: left;
+            padding: 4px 8px;
+            border: 1px solid var(--border-dark);
+        }
+
+        .stats-table td {
+            padding: 5px 8px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .about-content {
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        .about-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0;
+            text-align: center;
+        }
+
+        .about-content li {
+            margin: 8px 0;
+        }
+
+        .about-content b {
+            display: block;
+            margin-top: 12px;
+        }
+
+        #dailyjak-container {
+            height: 380px;
+            display: block;
+            max-width: 100%;
+            margin: 4px auto 0;
+        }
+
+        #dailyjak-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .recentposts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .rp-widget {
+            margin-bottom: 12px;
+        }
+
+        .rp-title {
+            display: block;
+            padding: 3px 8px;
+            border: 1px solid var(--border-dark);
+            border-bottom: none;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .rp-body {
+            border: 1px solid var(--border-dark);
+            padding: 8px;
+            background: #fff;
+            min-height: 34px;
+        }
+
+        .rp-green .rp-title { background: #8dc35f; color: #003300; }
+        .rp-green .rp-body  { background: #d7e8d9; }
+        .rp-blue .rp-title  { background: #4b88b5; color: #fff; }
+        .rp-blue .rp-body   { background: #d7daef; }
+
+        #recent-images,
+        #latest-posts,
+        #site-stats {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #recent-images {
+            text-align: center;
+        }
+
+        #recent-images li {
+            display: inline-block;
+            margin: 6px;
+        }
+
+        #recent-images img {
+            width: 245px;
+            max-width: 100%;
+            max-height: 255px;
+            height: auto;
+            border: 0;
+        }
+
+        #latest-posts {
+            max-height: 540px;
+            overflow: auto;
+        }
+
+        #latest-posts li,
+        #site-stats li {
+            margin: 4px 0;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+
+        .lp-snippet {
+            font-style: italic;
+            color: #30304f;
+        }
+
+        @media (max-width: 850px) {
+            .recentposts-grid {
+                grid-template-columns: 1fr;
+            }
+            #latest-posts {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+	{{ boardlist.top }}
+	<header>
+	    <img class="icon" src="{{ settings.icon }}">
+		<h1>{{ settings.title }}</h1>
+		<div class="subtitle">{{ settings.subtitle }}</div>
+	</header>
+	
+	<div class="box-wrap">
+	<div class="box middle"><h2>News</h2>
+        <table class="news-table">
+            <tbody id="news-container"><tr><td colspan="2">No news found.</td></tr></tbody>
+        </table>
+    </div>
+	    <div class="box middle"><h2>About</h2><ul style="text-align: center; margin-top: 8px;"><li>
+	        <br>
+	        <div class="description">{{ settings.description }}<br><br>Please read the <a href="/rules.html">rules</a> before posting.</li></ul></div>
+	        <!--<br>
+	        <img class="imageofnow" src="{{ settings.imageofnow }}">
+	        <br>
+	        <div class="quoteofnow">{{ settings.quoteofnow }}</div>
+	        <br>
+	        <iframe class ="videoofnow" width="560" height="315" src="{{ settings.videoofnow }}"></iframe>
+	        <br>-->
+	    </div>
+	    <!--<div class="ban">
+		{% if news|count == 0 %}
+			<p style="text-align:center" class="unimportant">(No news to show.)</p>
+		{% else %}
+			{% for entry in news %}
+				<h2 id="{{ entry.id }}">
+					{% if entry.subject %}
+						{{ entry.subject }}
+					{% else %}
+						<em>no subject</em>
+					{% endif %}
+					<span class="unimportant"> &mdash; by {{ entry.name }} at {{ entry.time|date(config.post_date, config.timezone) }}</span>
+				</h2>
+				<p>{{ entry.body }}</p>
+			{% endfor %}
+		{% endif %}
+	    </div>-->
+	    <h1>Recent Images</h1>
+		<div class="box image">
+			<ul>
+				{% for post in recent_images %}
+					<li>
+						<a href="{{ post.link }}">
+							<img src="{{ post.src }}" style="width:{{ post.thumbwidth }}px;height:{{ post.thumbheight }}px" alt="">
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="mainBox">
+			<h2>Latest Posts</h2>
+			<ul>
+				{% for post in recent_posts %}
+					<li>
+						<strong>{{ post.board_name }}</strong>: 
+						<a href="{{ post.link }}">
+							{{ post.snippet }}
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="mainBox">
+			<h2>Stats</h2>
+			<ul>
+				<li>Total posts: {{ stats.total_posts }}</li>
+				<li>Unique posters: {{ stats.unique_posters }}</li>
+				<li>Active content: {{ stats.active_content|filesize }}</li>
+			</ul>
+		</div>
+	</div>
+	
+	<hr/>
+
+	{% include 'footer.html' %}
+	
+	<script>
+const BOARD_META = [{"uri":"bgr","title":"/gen/eral, /ran/dom"}];
+
+function stripHtml(html) {
+    return String(html || '')
+        .replace(/<br\s*\/?>/gi, ' ')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&gt;/g, '>')
+        .replace(/&lt;/g, '<')
+        .replace(/&amp;/g, '&')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function toIntSafe(value) {
+    const digits = String(value || '').replace(/[^\d]/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+}
+
+let overboardDocPromise = null;
+function getOverboardDoc() {
+    if (!overboardDocPromise) {
+        overboardDocPromise = fetch('/overboard/index.html', { cache: 'no-store' })
+            .then(r => {
+                if (!r.ok) throw new Error('overboard fetch failed: ' + r.status);
+                return r.text();
+            })
+            .then(html => new DOMParser().parseFromString(html, 'text/html'));
+    }
+    return overboardDocPromise;
+}
+
+function renderBottomStats() {
+    const box = document.getElementById('site-stats');
+    const rows = Array.from(document.querySelectorAll('#stats-container tr[data-board]'));
+    if (!box || !rows.length) return;
+
+    let sumPPH = 0;
+    let sumPPD = 0;
+    let sumPosters = 0;
+    let sumPosts = 0;
+
+    rows.forEach(row => {
+        sumPPH += toIntSafe(row.querySelector('.pph')?.textContent);
+        sumPPD += toIntSafe(row.querySelector('.ppd')?.textContent);
+        sumPosters += toIntSafe(row.querySelector('.posters')?.textContent);
+        sumPosts += toIntSafe(row.querySelector('.posts')?.textContent);
+    });
+
+    box.innerHTML = [
+        `<li>Boards: ${rows.length.toLocaleString()}</li>`,
+        `<li>Total posts: ${sumPosts.toLocaleString()}</li>`,
+        `<li>Unique posters: ${sumPosters.toLocaleString()}</li>`,
+        `<li>Posts per hour: ${sumPPH.toLocaleString()}</li>`,
+        `<li>Posts per day: ${sumPPD.toLocaleString()}</li>`
+    ].join('');
+}
+
+async function loadBoardStats() {
+    const statsBody = document.getElementById('stats-container');
+    if (!statsBody) return;
+
+    statsBody.innerHTML = BOARD_META.map(b => `
+        <tr id="row-${b.uri}" data-board="${b.uri}">
+            <td><a href="/${b.uri}/" class="board-link">/${b.uri}/</a></td>
+            <td>${b.title}</td>
+            <td class="text-right pph">0</td>
+            <td class="text-right ppd">0</td>
+            <td class="text-right posters">0</td>
+            <td class="text-right posts">0</td>
+        </tr>
+    `).join('');
+
+    renderBottomStats();
+
+    await Promise.allSettled(BOARD_META.map(async (b) => {
+        try {
+            const res = await fetch(`/${b.uri}/catalog.json`, { cache: 'no-store' });
+            if (!res.ok) throw new Error('catalog fetch failed');
+            const pages = await res.json();
+            let threads = [];
+            pages.forEach(p => { if (Array.isArray(p.threads)) threads = threads.concat(p.threads); });
+
+            let totalPosts = 0;
+            let lastHour = 0;
+            let lastDay = 0;
+            const nowTs = Date.now() / 1000;
+            const oneHourAgo = nowTs - 3600;
+            const oneDayAgo = nowTs - 86400;
+
+            threads.forEach(t => {
+                totalPosts += (t.replies || 0) + 1;
+                if (t.time > oneHourAgo) lastHour++;
+                if (t.time > oneDayAgo) lastDay++;
+            });
+
+            const row = document.getElementById(`row-${b.uri}`);
+            if (!row) return;
+            row.querySelector('.pph').textContent = lastHour;
+            row.querySelector('.ppd').textContent = lastDay;
+            row.querySelector('.posters').textContent = threads.length;
+            row.querySelector('.posts').textContent = totalPosts.toLocaleString();
+            renderBottomStats();
+        } catch (e) {}
+    }));
+}
+
+async function loadNews() {
+    const box = document.getElementById('news-container');
+    if (!box) return;
+
+    try {
+        const res = await fetch('/news/catalog.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('news fetch failed');
+        const pages = await res.json();
+        let threads = [];
+        pages.forEach(p => { if (Array.isArray(p.threads)) threads = threads.concat(p.threads); });
+        threads.sort((a, b) => b.time - a.time);
+
+        box.innerHTML = threads.slice(0, 5).map(t => {
+            const date = new Date(t.time * 1000).toLocaleDateString();
+            const title = t.sub || 'News';
+            return `<tr><td class="news-date">${date}: <a href="/news/res/${t.no}.html">${title}</a></td></tr>`;
+        }).join('') || '<tr><td colspan="2">No news found.</td></tr>';
+    } catch (e) {
+        box.innerHTML = '<tr><td colspan="2">News load error.</td></tr>';
+    }
+}
+
+async function loadRecentImages() {
+    const box = document.getElementById('recent-images');
+    if (!box) return;
+
+    try {
+        const doc = await getOverboardDoc();
+        let links = Array.from(doc.querySelectorAll('a.fileThumb'));
+        if (!links.length) {
+            links = Array.from(doc.querySelectorAll('a[href*="/src/"]')).filter(a => /\.(png|jpe?g|gif|webp)$/i.test(a.getAttribute('href') || ''));
+        }
+
+        const items = [];
+        const seen = new Set();
+
+        for (const a of links) {
+            if (items.length >= 4) break;
+            const hrefRaw = a.getAttribute('href') || '';
+            if (!hrefRaw) continue;
+
+            const fullUrl = new URL(hrefRaw, location.origin);
+            const img = a.querySelector('img');
+            const thumb = img ? new URL(img.getAttribute('src') || hrefRaw, location.origin).pathname : fullUrl.pathname;
+            const threadLink = (a.closest('.thread')?.querySelector('a[href*="/res/"]')?.getAttribute('href')) || fullUrl.pathname;
+            const normalizedThreadLink = new URL(threadLink, location.origin).pathname + (new URL(threadLink, location.origin).hash || '');
+            const key = `${fullUrl.pathname}|${normalizedThreadLink}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            items.push({ full: fullUrl.pathname, thumb, link: normalizedThreadLink });
+        }
+
+        box.innerHTML = items.length ? items.map(i => `
+            <li>
+                <a href="${i.link}">
+                    <img src="${i.thumb}" onerror="this.onerror=null;this.src='${i.full}';" alt="">
+                </a>
+            </li>
+        `).join('') : '<li>No images found on overboard.</li>';
+    } catch (e) {
+        box.innerHTML = '<li>Error</li>';
+    }
+}
+
+async function loadLatestPosts() {
+    const box = document.getElementById('latest-posts');
+    if (!box) return;
+
+    try {
+        const doc = await getOverboardDoc();
+        const posts = Array.from(doc.querySelectorAll('div.post, div.reply, div.postContainer'));
+        const items = [];
+        const seen = new Set();
+
+        for (const post of posts) {
+            const msgEl = post.querySelector('blockquote.postMessage, blockquote, .postMessage, .body');
+            const linkA = post.querySelector('a[href*="/res/"][href*="#p"], a[href*="/res/"][href*="#q"], a[href*="/res/"]');
+            if (!msgEl || !linkA) continue;
+
+            const href = linkA.getAttribute('href') || '';
+            const url = new URL(href, location.origin);
+            const match = url.pathname.match(/^\/([^/]+)\/res\/\d+\.html$/);
+            if (!match) continue;
+
+            const snippet = stripHtml(msgEl.innerHTML).slice(0, 120);
+            if (!snippet) continue;
+
+            const key = `${url.pathname}${url.hash}|${snippet}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            items.push({
+                board: match[1],
+                link: url.pathname + (url.hash || ''),
+                snippet
+            });
+            if (items.length >= 25) break;
+        }
+
+        box.innerHTML = items.length ? items.map(p => `
+            <li>
+                <strong>/${p.board}/</strong>: <a href="${p.link}"><span class="lp-snippet">${p.snippet}</span></a>
+            </li>
+        `).join('') : '<li>No posts found on overboard.</li>';
+    } catch (e) {
+        box.innerHTML = '<li>Error</li>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadNews();
+    loadBoardStats();
+    loadRecentImages();
+    loadLatestPosts();
+});
+</script>
+</body>
+</html>
+{% endfilter %}

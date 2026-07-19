@@ -1,10 +1,4 @@
 <form action="{{ config.post_url }}" method="post" id="report_form">
-<script>
-$(function () {
-  const a = document.querySelector('a[title="Options"]');
-  if (a) a.style.display = 'none';
-});
-</script>
 	{% if error %}
 		<div class="error">
 			<strong>{{ error|e }}</strong>
@@ -12,7 +6,7 @@ $(function () {
 	{% endif %}
 	<input type="hidden" name="board" value="{{ board.uri }}">
 	<input type="hidden" name="{{ post|e }}" value="1">
-	<label for="reason">Reason</label><textarea type="text" id="reason" name="reason" rows="5" cols="35" value="{{ reason_prefill|e|addslashes }}"></textarea>
+	<textarea type="text" id="reason" name="reason" rows="5" cols="35" value="{{ reason_prefill|e|addslashes }}" placeholder="Reason for reporting here"></textarea>
 	{% if config.report_captcha %}
 		<p>{% trans %}To submit your report, please fill out the CAPTCHA below.{% endtrans %}</p>
 		{{ captcha['html'] }}<br/>
@@ -25,7 +19,7 @@ $(function () {
 	  <div
 		id="turnstile-container"
 		class="cf-turnstile"
-		data-sitekey="actualturnstilekeyhere"
+		data-sitekey="soy"
 		data-callback="turnstileCallback"
 		data-expired-callback="turnstileExpired"
 		data-error-callback="turnstileError"

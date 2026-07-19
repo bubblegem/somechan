@@ -1007,7 +1007,7 @@ $instance_config =
 					'<p>The next steps to making your imageboard is logging into the admin panel at <strong><a href="/mod.php">/mod.php</a></strong> using the default credentials:</p>' .
 					'<p><strong>Username:</strong> admin</p>' .
 					'<p><strong>Password:</strong> password</p>' .
-					'<p><strong>Important: For security, please change the administrator password immediately after logging in.</strong></p></div>';
+					'<p><strong>Important: For security, please change the password of the owner account immediately after logging in, and in order to prevent a <a href="https://soyjakwiki.org/Captain Coal attack">CCA (Captain Coal Attack)</a>.</strong></p></div>';
 					//'<p style="text-align:center"><a href="/mod.php"><button>Go to Admin Panel</button></a></p></div>';
 
 	if (!empty($sql_errors)) {

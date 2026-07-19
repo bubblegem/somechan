@@ -38,7 +38,6 @@ if (active_page == 'thread' || active_page == 'index' || active_page == 'ukko') 
     }
 
     Menu.add_item("report_menu", _("Report"));
-    //Menu.add_item("global_report_menu", _("Global report"));
     Menu.onclick(function(e, $buf) {
       var ele = e.target.parentElement.parentElement;
       var $ele = $(ele);
@@ -56,7 +55,7 @@ if (active_page == 'thread' || active_page == 'index' || active_page == 'ukko') 
       });
     });
 
-    $('#post-moderation-fields').hide();
+    $('#post-moderation-fields').show();
     $('#delete-fields input[type="checkbox"]').show();
   });
 

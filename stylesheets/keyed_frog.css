@@ -1,0 +1,120 @@
+body {
+    background: #D6FFD5;
+}
+a, a:link, a:visited, .intro a.email span.name {
+    color: #117743;
+}
+a.hover {
+    color: #117743;
+}
+a.post_no {
+    color: #2E790E;
+}
+div.post.reply {
+    background: #A8EAA6;
+    border-color: #92D195;
+}
+div.post.reply.highlighted {
+    background: #98E2A4;
+    border-color: #92D195;
+}
+div.post.reply div.body a {
+    color: green;
+}
+.intro span.subject {
+    color: #009807;
+}
+form table tr th {
+    background-color: #8ACF52;
+    color: #2E790E;
+    font-weight: 700;
+    border: 1px solid #2E790E;
+    padding: 0 5px;
+    font-size:10pt
+}
+div.ban h2 {
+    background: #8ACF52;
+    color: inherit;
+}
+div.ban {
+    border-color: #2E790E;
+}
+div.ban p {
+    color: black;
+}
+div.pages {
+    background: #A8EAA6;
+    border-color: #92D195;
+}
+div.pages a.selected {
+    color: #2E790E;
+}
+header div.subtitle,h1 {
+  color: #2E790E;
+  text-align: center;
+}
+hr {
+    border: none;
+    border-top: 1px solid #2E790E;
+    height: 0;
+}
+div.boardlist {
+    color: #2E790E;
+}
+div.boardlist a {
+    color: #2E790E;
+}
+table.modlog tr th {
+    background: #8ACF52;
+}
+.box.right h2 {
+    background: #8acf52;
+    color: black;
+}
+.box.left h2 {
+    background: #8acf52;
+    color: black;
+}
+.box.left {
+    border: 1px solid black;
+    background: white;
+
+}
+
+.box.right {
+    background: white;
+    color: black;
+    border: 1px solid black;
+    float: right;
+}
+
+/* options.js */
+#options_div, #alert_div {
+    background: #D6FFD5;
+}
+
+.desktop-style div.boardlist:nth-child(1) {
+    background-color: #D6FFD5;
+}
+img.banner, img.board_image {
+        display: block;
+        border: 1px solid #2E790E;
+        margin: 12px auto 0 auto;;
+}
+body {     background-image: url(/ngqmo4.png);     background-position: bottom right;     background-repeat: no-repeat;     background-attachment: fixed;
+
+/*
+     FILE ARCHIVED ON 04:54:22 Dec 04, 2024 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 20:43:21 Jun 14, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.359
+  load_resource: 132.923
+  PetaboxLoader3.resolve: 85.261
+  PetaboxLoader3.datanode: 9.7
+*/
